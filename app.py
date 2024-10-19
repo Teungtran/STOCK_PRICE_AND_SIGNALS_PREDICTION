@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import yfinance as yf
-from tensorflow.keras.models import load_model
 import datetime as dt
 import joblib as jb
 
@@ -52,6 +51,9 @@ try:
 except Exception as e:
     st.error(f"Error loading model or scaler: {e}")
     st.stop()
+    
+st.warning("THIS MODEL CAN ONLY PERFORM WITH STOCKS THAT ARE IN THE SAME CURRENCY")
+st.divider()
 
 # Make predictions
 if st.button("Make Predictions"):
@@ -74,7 +76,7 @@ if st.button("Make Predictions"):
     # Align predictions with actual dates
     prediction_dates = data.index[prediction_days:]
 
-     # Plot predictions
+    # Plot predictions
     st.subheader("Price Predictions")
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(data.index, real_data, label="Actual Prices")
@@ -94,7 +96,7 @@ if st.button("Make Predictions"):
 
     for _ in range(future_days):
         next_pred = model.predict(last_sequence.reshape(1, prediction_days, 1))
-        future_predictions.append(next_pred[0, 0])
+        future_predictions.append(next_pred[0])
         last_sequence = np.append(last_sequence[1:], next_pred)
 
     future_predictions = scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1))
@@ -113,3 +115,4 @@ if st.button("Make Predictions"):
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
+    

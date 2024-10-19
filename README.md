@@ -41,3 +41,6 @@ Bạn có thể điều chỉnh các tham số của mô hình như prediction_d
 
 Lưu ý
 Dự án này chỉ nhằm mục đích nghiên cứu và giáo dục. Không nên sử dụng nó làm cơ sở duy nhất cho các quyết định đầu tư thực tế.
+
+** NHƯỢC ĐIỂM: CHỈ CÓ THỂ DỰ ĐOÁN CÁC MÃ CỔ PHIẾU CÓ CÙNG LOẠI TIỀN TỆ
+- VD: MÔ HÌNH TRÊN SỬ DỤNG ĐỂ DỰ ĐOÁN MÃ CỔ PHIẾU SỬ DỤNG TIỀN TỆ LÀ USD, KHÔNG THÍCH HỢP ĐỂ DỰ ĐOÁN CÁC MÃ CỔ PHIẾU DÙNG ĐƠN VỊ KHÁC NHƯ VND

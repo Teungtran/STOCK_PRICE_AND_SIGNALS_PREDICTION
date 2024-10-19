@@ -36,9 +36,7 @@ Dự đoán giá cổ phiếu và hiển thị kết quả
 
 
 Để thay đổi cổ phiếu được phân tích, hãy sửa đổi mã cổ phiếu trong dòng df = yf.Ticker("VIC.VN").
-Bạn có thể điều chỉnh các tham số của mô hình như prediction_days và future để thay đổi khoảng thời gian dự đoán.
+Bạn có thể điều chỉnh các tham số của mô hình như prediction_days và future để thay đổi khoảng thời gian dự đoán. ( sử dụng giao diện xây dựng bàng thư viện Streamlit)
 
-Đóng góp
-Đóng góp cho dự án này luôn được chào đón. Vui lòng mở một issue hoặc tạo pull request nếu bạn có bất kỳ cải tiến nào.
 Lưu ý
 Dự án này chỉ nhằm mục đích nghiên cứu và giáo dục. Không nên sử dụng nó làm cơ sở duy nhất cho các quyết định đầu tư thực tế.

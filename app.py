@@ -14,7 +14,7 @@ st.title("Stock Price Prediction App")
 
 # Sidebar
 st.sidebar.header("User Input")
-stock_symbol = st.sidebar.text_input("Enter Stock Symbol (e.g., VIC.VN)", "VIC.VN")
+stock_symbol = st.sidebar.text_input("Enter Stock Symbol")
 prediction_days = st.sidebar.slider("Prediction Days", 30, 90, 60)
 future_days = st.sidebar.slider("Future Days to Predict", 7, 60, 30)
 

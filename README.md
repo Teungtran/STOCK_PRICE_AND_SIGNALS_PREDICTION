@@ -35,7 +35,8 @@ Xây dựng và huấn luyện mô hình LSTM
 Dự đoán giá cổ phiếu và hiển thị kết quả
 
 
-Để thay đổi cổ phiếu được phân tích, hãy sửa đổi mã cổ phiếu trong dòng df = yf.Ticker("VIC.VN").
+Để thay đổi cổ phiếu được phân tích, hãy sửa đổi mã cổ phiếu ở mục Stock symbol
+
 Bạn có thể điều chỉnh các tham số của mô hình như prediction_days và future để thay đổi khoảng thời gian dự đoán. ( sử dụng giao diện xây dựng bàng thư viện Streamlit)
 
 Lưu ý

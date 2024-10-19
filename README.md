@@ -1,4 +1,4 @@
-Dự án Dự đoán Giá Cổ phiếu sử dụng LSTM ( Tỷ lệ đúng: 95%)
+Dự án Dự đoán Giá Cổ phiếu (AAPL) sử dụng LSTM ( Tỷ lệ đúng: 91%)
 
 Dự án này sử dụng mạng neural LSTM (Long Short-Term Memory) để dự đoán giá cổ phiếu trong tương lai dựa trên dữ liệu lịch sử.
 Tổng quan

@@ -14,9 +14,9 @@ st.title("Stock Price Prediction App")
 
 # Sidebar
 st.sidebar.header("User Input")
-stock_symbol = st.sidebar.text_input("Enter Stock Symbol")
+stock_symbol = st.sidebar.text_input("Enter Stock Symbol (e.g., APPL)")
 prediction_days = st.sidebar.slider("Prediction Days", 30, 90, 60)
-future_days = st.sidebar.slider("Future Days to Predict", 7, 60, 30)
+future_days = st.sidebar.slider("Future Days to Predict", 1, 60, 30)
 
 # Main content
 @st.cache_data
@@ -115,4 +115,4 @@ if st.button("Make Predictions"):
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
-    
+    #streamlit run app.py

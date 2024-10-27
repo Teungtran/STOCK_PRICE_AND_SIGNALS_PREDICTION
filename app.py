@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import yfinance as yf
 import datetime as dt
 import joblib as jb
-
+import talib as tb
 # Set page config
 st.set_page_config(page_title="Stock Price Prediction App", layout="wide")
 
@@ -23,11 +23,26 @@ future_days = st.sidebar.slider("Future Days to Predict", 1, 60, 30)
 def load_data(symbol):
     df = yf.Ticker(symbol)
     return df.history(period="max")
-
+    
 data = load_data(stock_symbol)
+# Calculate additional metrics
+data['Daily_Return'] = data['Close'].pct_change() * 100
+data['Price_Change'] = data['Close'] - data['Open']
+data['Price_Change_Pct'] = abs(((data['Close'] - data['Open']) / data['Open']) * 100)
+data['RSI'] = tb.RSI(data['Close'], timeperiod=14)
+# Calculate 20-day, 50_days and for short and medium terms analysis
+data['SMA20'] = tb.SMA(data['Close'], timeperiod=20)
+data['SMA50']  = tb.SMA(data['Close'], timeperiod=50)
+# calculate additional indicators
+data['EMA12']  = tb.EMA(data['Close'], timeperiod=12)
+data['EMA26'] = tb.EMA(data['Close'], timeperiod=26)
+data['Bollinger_Upper'],data['Bollinger_Middle'] ,data['Bollinger_Lower'] = tb.BBANDS(data['Close'], timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
+data['ATR'] = tb.ATR(data['High'], data['Low'], data['Close'], timeperiod=14)
+
+data = data.drop(columns= ['Bollinger_Middle','Low','High']) # model does not use these columns
 
 # Display raw data
-st.subheader("Raw Data")
+st.subheader("INDICATORS")
 st.write(data.tail())
 
 # Plot line chart

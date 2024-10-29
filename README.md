@@ -1,4 +1,4 @@
-Dự án Dự đoán Giá Cổ phiếu (AAPL) sử dụng LSTM ( Tỷ lệ đúng: 97%)
+Dự án Dự đoán Giá Cổ phiếu (AAPL) sử dụng LSTM ( Tỷ lệ đúng: 97%) Và Đánh Giá Tín hiệu sử dụng RandomForestClassifier ( Mua , Bán, Giữ) (Tỷ lệ Đúng 90%)
 
 Dự án này sử dụng mạng neural LSTM (Long Short-Term Memory) để dự đoán giá cổ phiếu trong tương lai dựa trên dữ liệu lịch sử.
 Tổng quan
@@ -6,9 +6,11 @@ Tổng quan
 Dự án này bao gồm các bước sau:
 
 - Thu thập dữ liệu cổ phiếu từ Yahoo Finance
-- Tiền xử lý và chuẩn hóa dữ liệu
+- Viết và tính toán các chỉ số đánh giá như (RSI, SMA20,SM50,SM200, ATR, Bollinger_Upper,Lower,Middle, MACD...)
+- Tiền xử lý và chuẩn hóa dữ liệu theo thời gian
 - Xây dựng và huấn luyện mô hình LSTM
 - Dự đoán giá cổ phiếu và đánh giá kết quả
+- Xây dựng và sử dụng RandomClassifier để dự đoán tín hiệu
 
 Yêu cầu
 
@@ -21,14 +23,11 @@ Yêu cầu
 - yfinance
 - mplfinance
 - seaborn
+.....
 
 Bạn có thể cài đặt các thư viện cần thiết bằng cách chạy:'
 pip install pandas numpy matplotlib scikit-learn tensorflow yfinance mplfinance seaborn
 
-- Thu thập dữ liệu cổ phiếu
-- Hiển thị biểu đồ nến và biểu đồ đường
-- Xây dựng và huấn luyện mô hình LSTM
-- Dự đoán giá cổ phiếu và hiển thị kết quả
 
 Để thay đổi cổ phiếu được phân tích, hãy sửa đổi mã cổ phiếu ở mục Stock symbol
 

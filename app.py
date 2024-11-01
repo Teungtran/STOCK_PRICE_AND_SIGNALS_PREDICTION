@@ -6,17 +6,18 @@ import yfinance as yf
 import datetime as dt
 import joblib as jb
 import talib as tb
+
 # Set page config
-st.set_page_config(page_title="Stock Price Prediction App", layout="wide")
+st.set_page_config(page_title="Stock Price & Signals Recommendation App", layout="wide")
 
 # Title
-st.title("Stock Price Prediction App")
+st.title("Stock Price & Signals Recommendation App")
 
 # Sidebar
 st.sidebar.header("User Input")
-stock_symbol = st.sidebar.text_input("Enter Stock Symbol (e.g., APPL)")
-prediction_days = st.sidebar.slider("Prediction Days", 30, 90, 60)
-future_days = st.sidebar.slider("Future Days to Predict", 1, 60, 30)
+stock_symbol = st.sidebar.text_input("Enter Stock Symbol (e.g., AAPL)")
+future_days = st.sidebar.slider("Future Days to Predict", 1, 60, 7)
+prediction_days = st.sidebar.slider("Prediction Days", 30, 90, 10)
 
 # Main content
 @st.cache_data
@@ -30,17 +31,17 @@ data['Daily_Return'] = data['Close'].pct_change() * 100
 data['Price_Change'] = data['Close'] - data['Open']
 data['Price_Change_Pct'] = abs(((data['Close'] - data['Open']) / data['Open']) * 100)
 data['RSI'] = tb.RSI(data['Close'], timeperiod=14)
-# Calculate 20-day, 50_days and for short and medium terms analysis
+# Calculate 20-day, 50_days,200-days and for short , medium and long terms analysis
 data['SMA20'] = tb.SMA(data['Close'], timeperiod=20)
 data['SMA50']  = tb.SMA(data['Close'], timeperiod=50)
+data['SMA200']  = tb.SMA(data['Close'], timeperiod=200)
+
 # calculate additional indicators
 data['EMA12']  = tb.EMA(data['Close'], timeperiod=12)
 data['EMA26'] = tb.EMA(data['Close'], timeperiod=26)
 data['Bollinger_Upper'],data['Bollinger_Middle'] ,data['Bollinger_Lower'] = tb.BBANDS(data['Close'], timeperiod=20, nbdevup=2, nbdevdn=2, matype=0)
 data['ATR'] = tb.ATR(data['High'], data['Low'], data['Close'], timeperiod=14)
-
-data = data.drop(columns= ['Bollinger_Middle','Low','High']) # model does not use these columns
-
+data.dropna(inplace = True)
 # Display raw data
 st.subheader("INDICATORS")
 st.write(data.tail())
@@ -57,11 +58,11 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 st.pyplot(fig)
 
-
-
 try:
     model = jb.load('model.pkl ')
     scaler = jb.load('scaler.pkl')
+    class_model = jb.load('forestforest.pkl')
+    scaler_class = jb.load('scaler_class.pkl')
     st.success("Pre-trained model and scaler loaded successfully!")
 except Exception as e:
     st.error(f"Error loading model or scaler: {e}")
@@ -130,4 +131,55 @@ if st.button("Make Predictions"):
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
-    #streamlit run app.py
+
+    # Stock Signals
+# prepare data
+data['MACD'], data['MACD_signal'], data['MACD_hist'] = tb.MACD(data['Close'],fastperiod=12, slowperiod=26, signalperiod=9) 
+def label_stocks(stock_df):
+    conditions = [
+        # Buy if RSI < 30 and SMA20 > SMA50
+        (stock_df['RSI'] < 30) & (stock_df['SMA20'] > stock_df['SMA50']),
+        # Sell if RSI > 70 and SMA20 < SMA50
+        (stock_df['RSI'] > 70) & (stock_df['SMA20'] < stock_df['SMA50']),
+        # Buy if MACD crosses above the signal line (Bullish crossover)
+        (stock_df['MACD'] > stock_df['MACD_signal']) & (stock_df['MACD'].shift(1) <= stock_df['MACD_signal'].shift(1)),
+        # Sell if MACD crosses below the signal line (Bearish crossover)
+        (stock_df['MACD'] < stock_df['MACD_signal']) & (stock_df['MACD'].shift(1) >= stock_df['MACD_signal'].shift(1)),
+        # Buy if price is below the lower Bollinger Band (Oversold condition)
+        (stock_df['Close'] < stock_df['Bollinger_Lower']),
+        # Sell if price is above the upper Bollinger Band (Overbought condition)
+        (stock_df['Close'] > stock_df['Bollinger_Upper'])
+    ]
+    
+    # Define the corresponding choices
+    choices = ['Buy', 'Sell', 'Buy', 'Sell', 'Buy', 'Sell']
+    
+    # Define the default value for 'Hold' if no condition is met
+    default = 'Hold'
+    
+    # Apply the conditions and choices to create the 'Signal' column
+    stock_df['Signal'] = np.select(conditions, choices, default=default)
+    
+    # If any of the key columns (RSI, SMA20, SMA50, SMA200, MACD, Upper_Band, Lower_Band) have NaN values, set 'Signal' to NaN
+    stock_df.loc[stock_df[['RSI', 'SMA20', 'SMA50', 'SMA200', 'MACD', 'Bollinger_Upper', 'Bollinger_Lower']].isna().any(axis=1), 'Signal'] = np.nan
+    
+    return stock_df
+
+data = label_stocks(data)
+data['Signal'] = data['Signal'].map({'Hold': 0, 'Buy': 1, 'Sell': -1})
+class_df = data[['Close','SMA20', 'SMA50','RSI', 'MACD','MACD_signal' ,'Bollinger_Lower', 'Signal']]
+features_to_remove = [
+    'SMA20',  # Too many moving averages create redundancy, not relevent in choosing signals
+    'SMA50',
+    'SMA200',
+    'Bollinger_Middle',  # remove Bollinger_Middle (the same as SMA20)
+    'EMA12'  # the same as EMA26 in most cases
+]
+df_cleaned = data.drop(columns=features_to_remove)
+df_cleaned.dropna(inplace=True)
+class_model = jb.load('forestforest.pkl')
+scaler_class = jb.load('scaler_class.pkl')
+# Make prediction
+if st.button("Make Stock Signal Suggestion"):
+    class_df.replace({0:"Hold", 1:"Buy", -1:"Sell"}, inplace = True)
+    st.write(class_df.tail())
